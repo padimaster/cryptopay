@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <color name="logo_background">#FFFFFF</color>
+    <!-- Básicos -->
+    <color name="black">#FF000000</color>
+    <color name="white">#FFFFFFFF</color>
+
+    <!-- Marca: Primary (azules) -->
+    <color name="primary_950">#0A1528</color>
+    <color name="primary_900">#142747</color> <!-- Base de marca -->
+    <color name="primary_800">#1B3560</color>
+    <color name="primary_700">#234277</color>
+    <color name="primary_600">#2B5290</color>
+    <color name="primary_500">#3562A9</color>
+    <color name="primary_400">#4E78B6</color>
+    <color name="primary_300">#6A90C3</color>
+    <color name="primary_200">#93B0D4</color>
+    <color name="primary_100">#C4D3E6</color>
+    <color name="primary_50">#EAF1F9</color>
+
+    <!-- Alias para compatibilidad con referencias existentes -->
+    <color name="primary">@color/primary_900</color>
+
+    <!-- Acento (cyan) -->
+    <color name="accent_600">#00B7D6</color>
+    <color name="accent_500">#22D1EE</color>
+    <color name="accent_400">#5DE5F6</color>
+
+    <!-- Neutros -->
+    <color name="neutral_900">#0A0F1A</color>
+    <color name="neutral_800">#1C2433</color>
+    <color name="neutral_700">#2B3648</color>
+    <color name="neutral_600">#3B4A5F</color>
+    <color name="neutral_500">#5A6B80</color>
+    <color name="neutral_400">#7C8CA1</color>
+    <color name="neutral_300">#A4B1C3</color>
+    <color name="neutral_200">#C8D0DA</color>
+    <color name="neutral_100">#E5EAF0</color>
+    <color name="neutral_50">#F6F8FB</color>
+
+    <!-- Estados -->
+    <color name="success_500">#2E7D32</color>
+    <color name="warning_500">#ED6C02</color>
+    <color name="error_500">#D32F2F</color>
+    <color name="info_500">#0288D1</color>
+
+    <!-- Tokens Material para temas -->
+    <color name="colorPrimary">@color/primary_600</color>
+    <color name="colorPrimaryDark">@color/primary_900</color>
+    <color name="colorOnPrimary">@color/white</color>
+
+    <color name="colorSecondary">@color/accent_500</color>
+    <color name="colorOnSecondary">@color/primary_950</color>
+
+    <color name="colorSurface">@color/white</color>
+    <color name="colorOnSurface">@color/primary_900</color>
+
+    <color name="colorBackground">@color/white</color>
+    <color name="colorOnBackground">@color/primary_900</color>
+
+    <color name="colorError">@color/error_500</color>
+    <color name="colorOnError">@color/white</color>
+
+    <!-- Gradiente del fondo -->
+    <color name="primary_gradient_start">@color/primary_900</color>
+    <color name="primary_gradient_end">@color/primary_700</color>
+
+    <!-- Scrim / sombra -->
+    <color name="scrim_60">#99000000</color>
+
+    <color name="cta">#F39C12</color>
+</resources>

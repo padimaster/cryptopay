@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="Theme.CryptoPay" parent="Theme.MaterialComponents.DayNight.NoActionBar">
+        <!-- Paleta -->
+        <item name="colorPrimary">@color/primary_600</item>
+        <item name="colorPrimaryDark">@color/primary_900</item>
+        <item name="colorOnPrimary">@color/white</item>
+
+        <item name="colorSecondary">@color/accent_500</item>
+        <item name="colorOnSecondary">@color/primary_950</item>
+
+        <item name="colorSurface">@color/white</item>
+        <item name="colorOnSurface">@color/primary_900</item>
+
+        <!-- Usa esto solo si quieres forzar el fondo del sistema -->
+        <!-- <item name="android:colorBackground">@color/white</item> -->
+
+        <item name="colorError">@color/error_500</item>
+        <item name="colorOnError">@color/white</item>
+
+        <!-- Estilos por defecto -->
+        <item name="materialButtonStyle">@style/Widget.CryptoPay.Button.Pill</item>
+        <item name="textInputStyle">@style/Widget.CryptoPay.TextInputLayout.Outlined</item>
+
+        <!-- System bars -->
+        <item name="android:statusBarColor">@color/primary_900</item>
+        <item name="android:navigationBarColor">@color/white</item>
+    </style>
+
+    <style name="Widget.CryptoPay.TextInputLayout.Onboarding.Filled" parent="Widget.MaterialComponents.TextInputLayout.FilledBox">
+        <item name="boxBackgroundColor">@color/white</item>
+
+        <item name="android:textColorHint">@color/neutral_200</item>
+        <item name="hintTextColor">@color/neutral_200</item>
+
+        <item name="boxStrokeWidth">0dp</item>
+        <item name="boxStrokeWidthFocused">0dp</item>
+
+        <item name="startIconTint">@color/neutral_500</item>
+        <item name="endIconTint">@color/neutral_500</item>
+    </style>
+
+</resources>
