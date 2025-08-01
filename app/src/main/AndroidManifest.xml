@@ -39,6 +39,26 @@
         </activity>
 
         <activity
+            android:name=".MovimientosActivity">
+        </activity>
+
+        <activity
+            android:name=".HomeActivity">
+        </activity>
+
+        <activity
+            android:name=".TarjetasActivity">
+        </activity>
+
+        <activity
+            android:name=".PagarActivity">
+        </activity>
+
+        <activity
+            android:name=".MontoPagarActivity">
+        </activity>
+
+        <activity
             android:name=".OnboardingActivity">
         </activity>
     </application>

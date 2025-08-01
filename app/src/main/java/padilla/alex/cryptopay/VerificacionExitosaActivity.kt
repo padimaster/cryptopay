@@ -20,8 +20,8 @@ class VerificacionExitosaActivity : AppCompatActivity() {
     private fun setupClickListeners() {
         // Botón de continuar
         binding.continueButton.setOnClickListener {
-            // Navegar a la pantalla principal de la app
-            val intent = Intent(this, MainActivity::class.java)
+            // Navegar a la pantalla principal (Home)
+            val intent = Intent(this, HomeActivity::class.java)
             startActivity(intent)
             finish()
         }
