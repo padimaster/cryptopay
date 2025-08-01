@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@color/primary_900"
-    tools:context=".MontoPagarActivity">
+    tools:context=".PagoExitosoActivity">
 
     <!-- Logo superior derecho -->
     <ImageView
@@ -33,9 +33,48 @@
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintStart_toStartOf="parent" />
 
-    <!-- Contenido principal -->
+    <!-- Contenido de carga -->
     <LinearLayout
-        android:id="@+id/mainContentLayout"
+        android:id="@+id/loadingContent"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:orientation="vertical"
+        android:gravity="center"
+        app:layout_constraintTop_toBottomOf="@id/logoImageView"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigation"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <!-- Título "Procesando Pago" -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="40dp"
+            android:text="Procesando Pago..."
+            android:textColor="@color/white"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <!-- Spinner de carga -->
+        <ProgressBar
+            android:layout_width="80dp"
+            android:layout_height="80dp"
+            android:layout_marginBottom="24dp"
+            android:indeterminateTint="@color/accent_500" />
+
+        <!-- Texto de espera -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Por favor espere..."
+            android:textColor="@color/neutral_300"
+            android:textSize="16sp" />
+
+    </LinearLayout>
+
+    <!-- Contenido de éxito (inicialmente oculto) -->
+    <LinearLayout
+        android:id="@+id/successContent"
         android:layout_width="0dp"
         android:layout_height="0dp"
         android:layout_marginStart="24dp"
@@ -48,52 +87,33 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Título "Monto a Pagar" -->
+        <!-- Ícono de éxito -->
+        <ImageView
+            android:id="@+id/successIcon"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginTop="40dp"
+            android:layout_marginBottom="32dp"
+            android:src="@drawable/exitopago"
+            android:scaleType="fitCenter" />
+
+        <!-- Título "Pago exitoso!" -->
         <TextView
-            android:id="@+id/montoPagarTitle"
+            android:id="@+id/successTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="40dp"
             android:layout_marginBottom="40dp"
-            android:text="Monto a Pagar"
+            android:text="Pago exitoso!"
             android:textColor="@color/white"
             android:textSize="28sp"
             android:textStyle="bold" />
 
-        <!-- Círculo usuario -->
-        <View
-            android:id="@+id/userCircle"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
-            android:layout_marginBottom="24dp"
-            android:background="@drawable/bg_white_circle" />
-
-        <!-- Nombre del usuario -->
-        <TextView
-            android:id="@+id/userName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
-            android:text="Víveres Don Alfonso"
-            android:textColor="@color/white"
-            android:textSize="20sp"
-            android:textStyle="bold" />
-
-        <!-- Cuenta -->
-        <TextView
-            android:id="@+id/userAccount"
+        <!-- Monto pagado -->
+        <LinearLayout
+            android:id="@+id/amountLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginBottom="40dp"
-            android:text="Cuenta 0xc0C9****np733v"
-            android:textColor="@color/neutral_300"
-            android:textSize="16sp" />
-
-        <!-- Monto con símbolo de dólar -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="8dp"
             android:orientation="horizontal"
             android:gravity="center_vertical">
 
@@ -105,75 +125,52 @@
                 android:textSize="48sp"
                 android:textStyle="bold" />
 
-            <EditText
-                android:id="@+id/amountEditText"
+            <TextView
+                android:id="@+id/amountText"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="0.00"
+                android:text="64.21"
                 android:textColor="@color/white"
                 android:textSize="48sp"
                 android:textStyle="bold"
-                android:background="@android:color/transparent"
-                android:inputType="numberDecimal"
                 android:textAlignment="center"
-                android:minWidth="200dp"
-                android:hint="0.00"
-                android:textColorHint="@color/neutral_400" />
+                android:minWidth="200dp" />
 
         </LinearLayout>
 
-        <!-- Línea separadora -->
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginHorizontal="40dp"
-            android:layout_marginBottom="32dp"
-            android:background="@color/white" />
-
-        <!-- Pagar con -->
-        <TextView
-            android:id="@+id/pagarConLabel"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="16dp"
-            android:text="Pagar con:"
-            android:textColor="@color/neutral_300"
-            android:textSize="16sp" />
-
-        <!-- Selector USDT -->
+        <!-- Datos del usuario -->
         <LinearLayout
-            android:id="@+id/usdtSelector"
+            android:id="@+id/userDataLayout"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal"
-            android:gravity="center_vertical"
-            android:background="@color/neutral_700"
-            android:paddingHorizontal="20dp"
-            android:paddingVertical="12dp"
-            app:cornerRadius="20dp">
+            android:orientation="vertical"
+            android:gravity="center_horizontal">
 
+            <!-- Nombre del usuario -->
             <TextView
+                android:id="@+id/userName"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="₮"
-                android:textColor="@color/accent_500"
-                android:textSize="18sp"
-                android:textStyle="bold"
-                android:layout_marginEnd="8dp" />
-
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="USDT"
+                android:layout_marginBottom="8dp"
+                android:text="Víveres Don Alfonso"
                 android:textColor="@color/white"
-                android:textSize="16sp"
+                android:textSize="20sp"
                 android:textStyle="bold" />
+
+            <!-- Cuenta -->
+            <TextView
+                android:id="@+id/userAccount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Cuenta 0xc0C9****np733v"
+                android:textColor="@color/neutral_300"
+                android:textSize="16sp" />
 
         </LinearLayout>
 
     </LinearLayout>
 
-    <!-- Botones de acción -->
+    <!-- Botones de acción (inicialmente ocultos) -->
     <LinearLayout
         android:id="@+id/buttonsLayout"
         android:layout_width="0dp"
@@ -186,25 +183,25 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
-        <!-- Botón Pagar -->
+        <!-- Botón Realizar otro pago -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/pagarButton"
+            android:id="@+id/realizarOtroPagoButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
             android:layout_marginBottom="16dp"
-            android:text="Pagar"
+            android:text="Realizar otro pago"
             android:textColor="@color/white"
             android:textSize="16sp"
             android:textStyle="bold"
             app:backgroundTint="@color/cta"
             app:cornerRadius="28dp" />
 
-        <!-- Botón Cancelar -->
+        <!-- Botón Regresar -->
         <com.google.android.material.button.MaterialButton
-            android:id="@+id/cancelarButton"
+            android:id="@+id/regresarButton"
             android:layout_width="match_parent"
             android:layout_height="56dp"
-            android:text="Cancelar"
+            android:text="Regresar"
             android:textColor="@color/primary_900"
             android:textSize="16sp"
             android:textStyle="bold"

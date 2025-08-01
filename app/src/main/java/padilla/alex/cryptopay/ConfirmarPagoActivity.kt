@@ -3,18 +3,25 @@ package padilla.alex.cryptopay
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import padilla.alex.cryptopay.databinding.ActivityPagarBinding
+import padilla.alex.cryptopay.databinding.ActivityConfirmarPagoBinding
 
-class PagarActivity : AppCompatActivity() {
+class ConfirmarPagoActivity : AppCompatActivity() {
     
-    private lateinit var binding: ActivityPagarBinding
+    private lateinit var binding: ActivityConfirmarPagoBinding
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityPagarBinding.inflate(layoutInflater)
+        binding = ActivityConfirmarPagoBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
+        setupUI()
         setupClickListeners()
+    }
+    
+    private fun setupUI() {
+        // Obtener datos del intent
+        val amount = intent.getStringExtra("amount") ?: "64.21"
+        binding.amountText.text = amount
     }
     
     private fun setupClickListeners() {
@@ -23,10 +30,22 @@ class PagarActivity : AppCompatActivity() {
             finish()
         }
         
-        // Botón continuar
-        binding.continueButton.setOnClickListener {
-            val intent = Intent(this, MontoPagarActivity::class.java)
+        // Botón pagar
+        binding.pagarButton.setOnClickListener {
+            // Obtener el monto
+            val amount = intent.getStringExtra("amount") ?: "64.21"
+            
+            // Navegar a pago exitoso
+            val intent = Intent(this, PagoExitosoActivity::class.java)
+            intent.putExtra("amount", amount)
             startActivity(intent)
+            finish()
+        }
+        
+        // Botón cancelar
+        binding.cancelarButton.setOnClickListener {
+            // Volver al home o cerrar
+            finish()
         }
         
         // Navegación bottom navigation

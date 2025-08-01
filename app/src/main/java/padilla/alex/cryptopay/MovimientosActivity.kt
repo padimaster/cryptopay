@@ -1,5 +1,6 @@
 package padilla.alex.cryptopay
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import padilla.alex.cryptopay.databinding.ActivityMovimientosBinding
@@ -27,11 +28,10 @@ class MovimientosActivity : AppCompatActivity() {
         }
 
         binding.navWallet.setOnClickListener {
-            // TODO: Implementar navegación a Billetera
-        }
-
-        binding.navAccounts.setOnClickListener {
-            // TODO: Implementar navegación a Cuentas
+            val intent = Intent(this, BilleteraActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
     }
 }

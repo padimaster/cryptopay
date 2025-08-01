@@ -28,7 +28,8 @@ class HomeActivity : AppCompatActivity() {
     private fun setupClickListeners() {
         // Botones principales
         binding.depositButton.setOnClickListener {
-            Toast.makeText(this, "Función Depositar próximamente", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, DepositarActivity::class.java)
+            startActivity(intent)
         }
 
         binding.payButton.setOnClickListener {
@@ -64,11 +65,10 @@ class HomeActivity : AppCompatActivity() {
         }
 
         binding.navWallet.setOnClickListener {
-            Toast.makeText(this, "Billetera próximamente", Toast.LENGTH_SHORT).show()
-        }
-
-        binding.navAccounts.setOnClickListener {
-            Toast.makeText(this, "Cuentas próximamente", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this, BilleteraActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
     }
 }

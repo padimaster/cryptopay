@@ -59,6 +59,34 @@
         </activity>
 
         <activity
+            android:name=".ConfirmarPagoActivity">
+        </activity>
+
+        <activity
+            android:name=".PagoExitosoActivity">
+        </activity>
+
+        <activity
+            android:name=".BilleteraActivity">
+        </activity>
+
+        <activity
+            android:name=".RetirarCryptoActivity">
+        </activity>
+
+        <activity
+            android:name=".ConfirmarRetiroActivity">
+        </activity>
+
+        <activity
+            android:name=".RetiroExitosoActivity">
+        </activity>
+
+        <activity
+            android:name=".DepositarActivity">
+        </activity>
+
+        <activity
             android:name=".OnboardingActivity">
         </activity>
     </application>

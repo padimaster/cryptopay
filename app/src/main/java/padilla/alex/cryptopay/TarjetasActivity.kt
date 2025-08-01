@@ -27,11 +27,10 @@ class TarjetasActivity : AppCompatActivity() {
         }
         
         binding.navWallet.setOnClickListener {
-            // Navegación a billetera (futuro)
-        }
-        
-        binding.navAccounts.setOnClickListener {
-            // Navegación a cuentas (futuro)
+            val intent = Intent(this, BilleteraActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
     }
 }

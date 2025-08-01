@@ -3,29 +3,30 @@ package padilla.alex.cryptopay
 import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import padilla.alex.cryptopay.databinding.ActivityPagarBinding
+import padilla.alex.cryptopay.databinding.ActivityBilleteraBinding
 
-class PagarActivity : AppCompatActivity() {
+class BilleteraActivity : AppCompatActivity() {
     
-    private lateinit var binding: ActivityPagarBinding
+    private lateinit var binding: ActivityBilleteraBinding
     
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityPagarBinding.inflate(layoutInflater)
+        binding = ActivityBilleteraBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
         setupClickListeners()
     }
     
     private fun setupClickListeners() {
-        // Botón atrás
-        binding.backButton.setOnClickListener {
-            finish()
+        // Botón depositar
+        binding.depositarButton.setOnClickListener {
+            val intent = Intent(this, DepositarActivity::class.java)
+            startActivity(intent)
         }
         
-        // Botón continuar
-        binding.continueButton.setOnClickListener {
-            val intent = Intent(this, MontoPagarActivity::class.java)
+        // Botón retirar
+        binding.retirarButton.setOnClickListener {
+            val intent = Intent(this, RetirarCryptoActivity::class.java)
             startActivity(intent)
         }
         
@@ -45,10 +46,7 @@ class PagarActivity : AppCompatActivity() {
         }
         
         binding.navWallet.setOnClickListener {
-            val intent = Intent(this, BilleteraActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
-            startActivity(intent)
-            overridePendingTransition(0, 0)
+            // Ya estamos en billetera
         }
     }
 }

@@ -14,22 +14,42 @@ class MontoPagarActivity : AppCompatActivity() {
         binding = ActivityMontoPagarBinding.inflate(layoutInflater)
         setContentView(binding.root)
         
+        setupUI()
         setupClickListeners()
     }
     
+    private fun setupUI() {
+        // Configurar el EditText para que se enfoque automáticamente
+        binding.amountEditText.requestFocus()
+        
+        // Seleccionar todo el texto cuando se enfoque
+        binding.amountEditText.setOnFocusChangeListener { _, hasFocus ->
+            if (hasFocus) {
+                binding.amountEditText.selectAll()
+            }
+        }
+    }
+    
     private fun setupClickListeners() {
-        // Botón volver
+        // Botón atrás
         binding.backButton.setOnClickListener {
             finish()
         }
         
         // Botón pagar
         binding.pagarButton.setOnClickListener {
-            // Función para procesar el pago
+            // Obtener el monto ingresado
+            val amount = binding.amountEditText.text.toString()
+            
+            // Navegar a confirmar pago
+            val intent = Intent(this, ConfirmarPagoActivity::class.java)
+            intent.putExtra("amount", amount)
+            startActivity(intent)
         }
         
         // Botón cancelar
         binding.cancelarButton.setOnClickListener {
+            // Volver al home o cerrar
             finish()
         }
         
@@ -49,11 +69,10 @@ class MontoPagarActivity : AppCompatActivity() {
         }
         
         binding.navWallet.setOnClickListener {
-            // Navegación a billetera (futuro)
-        }
-        
-        binding.navAccounts.setOnClickListener {
-            // Navegación a cuentas (futuro)
+            val intent = Intent(this, BilleteraActivity::class.java)
+            intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
+            startActivity(intent)
+            overridePendingTransition(0, 0)
         }
     }
 }
