@@ -27,11 +27,8 @@ class OnboardingActivity : AppCompatActivity() {
 
         // Configurar el click del botón
         binding.continueButton.setOnClickListener {
-            // Aquí iría la lógica para guardar los datos del usuario en el backend
-            Toast.makeText(this, "Perfil guardado. ¡Bienvenido!", Toast.LENGTH_SHORT).show()
-
-            // Navegar a la pantalla principal
-            val intent = Intent(this, MainActivity::class.java)
+            // Navegar al flujo de verificación de identidad
+            val intent = Intent(this, OnboardingIdentidadActivity::class.java)
             startActivity(intent)
             finish() // Cierra esta actividad para que no se pueda volver
         }
