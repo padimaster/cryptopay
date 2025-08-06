@@ -1,6 +1,29 @@
-<?xml version="1.0" encoding="utf-8"?>
+<!-- Permisos que necesitas agregar en tu AndroidManifest.xml -->
+
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Permisos para networking -->
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!-- Permisos para cámara (reconocimiento facial y QR) -->
+    <uses-permission android:name="android.permission.CAMERA" />
+
+    <!-- Permisos para acceder a archivos (documentos de identidad) -->
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+        android:maxSdkVersion="28" />
+
+    <!-- Para Android 13+ (API 33+) -->
+    <uses-permission android:name="android.permission.READ_MEDIA_IMAGES" />
+
+    <!-- Características de hardware requeridas -->
+    <uses-feature android:name="android.hardware.camera" android:required="false" />
+    <uses-feature android:name="android.hardware.camera.autofocus" android:required="false" />
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-feature android:name="android.hardware.camera.front" android:required="false" />
 
     <application
         android:allowBackup="true"
@@ -10,19 +33,13 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.CryptoPay">
+        android:theme="@style/Theme.CryptoPay"
+        android:usesCleartextTraffic="true"
+        tools:targetApi="31">
 
+        <!-- Actividades existentes -->
         <activity
-            android:name=".LoginActivity">
-
-        </activity>
-
-        <activity
-            android:name=".MainActivity">
-        </activity>
-
-        <activity
-            android:name=".OnboardingIdentidadActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -30,65 +47,24 @@
             </intent-filter>
         </activity>
 
-        <activity
-            android:name=".OnboardingReconocimientoFacialActivity">
-        </activity>
+        <activity android:name=".LoginActivity" />
+        <activity android:name=".OnboardingActivity" />
+        <activity android:name=".OnboardingIdentidadActivity" />
+        <activity android:name=".OnboardingReconocimientoFacialActivity" />
+        <activity android:name=".VerificacionExitosaActivity" />
+        <activity android:name=".HomeActivity" />
+        <activity android:name=".BilleteraActivity" />
+        <activity android:name=".PagarActivity" />
+        <activity android:name=".MontoPagarActivity" />
+        <activity android:name=".ConfirmarPagoActivity" />
+        <activity android:name=".PagoExitosoActivity" />
+        <activity android:name=".DepositarActivity" />
+        <activity android:name=".RetirarCryptoActivity" />
+        <activity android:name=".ConfirmarRetiroActivity" />
+        <activity android:name=".RetiroExitosoActivity" />
+        <activity android:name=".MovimientosActivity" />
+        <activity android:name=".TarjetasActivity" />
 
-        <activity
-            android:name=".VerificacionExitosaActivity">
-        </activity>
-
-        <activity
-            android:name=".MovimientosActivity">
-        </activity>
-
-        <activity
-            android:name=".HomeActivity">
-        </activity>
-
-        <activity
-            android:name=".TarjetasActivity">
-        </activity>
-
-        <activity
-            android:name=".PagarActivity">
-        </activity>
-
-        <activity
-            android:name=".MontoPagarActivity">
-        </activity>
-
-        <activity
-            android:name=".ConfirmarPagoActivity">
-        </activity>
-
-        <activity
-            android:name=".PagoExitosoActivity">
-        </activity>
-
-        <activity
-            android:name=".BilleteraActivity">
-        </activity>
-
-        <activity
-            android:name=".RetirarCryptoActivity">
-        </activity>
-
-        <activity
-            android:name=".ConfirmarRetiroActivity">
-        </activity>
-
-        <activity
-            android:name=".RetiroExitosoActivity">
-        </activity>
-
-        <activity
-            android:name=".DepositarActivity">
-        </activity>
-
-        <activity
-            android:name=".OnboardingActivity">
-        </activity>
     </application>
 
 </manifest>

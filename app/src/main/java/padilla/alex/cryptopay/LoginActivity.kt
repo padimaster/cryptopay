@@ -1,269 +1,371 @@
 package padilla.alex.cryptopay
 
+import android.animation.Animator
+import android.animation.AnimatorListenerAdapter
 import android.content.Intent
 import android.os.Bundle
 import android.os.CountDownTimer
 import android.text.Editable
 import android.text.TextWatcher
-import android.util.Log
-import android.util.Patterns
 import android.view.View
-import android.view.inputmethod.InputMethodManager
-import android.widget.EditText
-import android.os.Handler
-import android.os.Looper
-import android.widget.Toast
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import com.google.android.material.internal.ViewUtils.hideKeyboard
-import padilla.alex.cryptopay.databinding.ActivityLoginBinding
+import androidx.constraintlayout.widget.Group
+import androidx.lifecycle.lifecycleScope
+import com.google.android.material.button.MaterialButton
+import com.google.android.material.card.MaterialCardView
+import com.google.android.material.textfield.TextInputEditText
+import com.google.android.material.textfield.TextInputLayout
+import kotlinx.coroutines.launch
+import padilla.alex.cryptopay.repository.ApiResult
+import padilla.alex.cryptopay.repository.CryptoPayRepository
+import padilla.alex.cryptopay.utils.PreferencesManager
+import padilla.alex.cryptopay.utils.Utils
 
 class LoginActivity : AppCompatActivity() {
 
-    private lateinit var b: ActivityLoginBinding
-    private var timer: CountDownTimer? = null
-    private lateinit var otpBoxes: Array<EditText>
+    // UI Elements - usando exactamente los IDs de tu layout
+    private lateinit var initialLoginButton: MaterialButton
+    private lateinit var loginCard: MaterialCardView
+    private lateinit var backButton: ImageButton
+    private lateinit var loginTitle: TextView
+    private lateinit var emailInputLayout: TextInputLayout
+    private lateinit var emailEditText: TextInputEditText
+    private lateinit var continueButton: MaterialButton
 
-    companion object {
-        private const val TAG = "LoginActivity"
-        private const val CORRECT_OTP = "123456"
-    }
+    // OTP Elements
+    private lateinit var otpGroup: Group
+    private lateinit var otpIllustration: ImageView
+    private lateinit var otpInfo: TextView
+    private lateinit var otpEmail: TextView
+    private lateinit var otp1: EditText
+    private lateinit var otp2: EditText
+    private lateinit var otp3: EditText
+    private lateinit var otp4: EditText
+    private lateinit var otp5: EditText
+    private lateinit var otp6: EditText
+    private lateinit var otpFeedbackText: TextView
+    private lateinit var resendRow: LinearLayout
+    private lateinit var resendHint: TextView
+    private lateinit var resendTimer: TextView
+    private lateinit var verifyButton: MaterialButton
+
+    // Success Elements
+    private lateinit var successGroup: Group
+    private lateinit var successIcon: ImageView
+    private lateinit var successTitle: TextView
+    private lateinit var successEmail: TextView
+
+    // Repository and Utils
+    private val repository = CryptoPayRepository()
+    private lateinit var preferencesManager: PreferencesManager
+
+    // State variables
+    private var currentToken: String? = null
+    private var otpFields: List<EditText> = emptyList()
+    private var countDownTimer: CountDownTimer? = null
+    private var isInitialState = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        b = ActivityLoginBinding.inflate(layoutInflater)
-        setContentView(b.root)
+        setContentView(R.layout.activity_login)
 
-        otpBoxes = arrayOf(b.otp1, b.otp2, b.otp3, b.otp4, b.otp5, b.otp6)
+        initViews()
+        setupListeners()
+        preferencesManager = PreferencesManager(this)
 
-        // CTA inicial
-        b.initialLoginButton.setOnClickListener {
-            it.visibility = View.GONE
-            showLoginPanel()
-            b.emailEditText.requestFocus()
-            showKeyboard(b.emailEditText)
+        // Verificar si ya está logueado
+        if (preferencesManager.isLoggedIn()) {
+            navigateToHome()
+        }
+    }
+
+    private fun initViews() {
+        // Main elements
+        initialLoginButton = findViewById(R.id.initialLoginButton)
+        loginCard = findViewById(R.id.loginCard)
+        backButton = findViewById(R.id.backButton)
+        loginTitle = findViewById(R.id.loginTitle)
+        emailInputLayout = findViewById(R.id.emailInputLayout)
+        emailEditText = findViewById(R.id.emailEditText)
+        continueButton = findViewById(R.id.continueButton)
+
+        // OTP elements
+        otpGroup = findViewById(R.id.otpGroup)
+        otpIllustration = findViewById(R.id.otpIllustration)
+        otpInfo = findViewById(R.id.otpInfo)
+        otpEmail = findViewById(R.id.otpEmail)
+        otp1 = findViewById(R.id.otp1)
+        otp2 = findViewById(R.id.otp2)
+        otp3 = findViewById(R.id.otp3)
+        otp4 = findViewById(R.id.otp4)
+        otp5 = findViewById(R.id.otp5)
+        otp6 = findViewById(R.id.otp6)
+        otpFeedbackText = findViewById(R.id.otpFeedbackText)
+        resendRow = findViewById(R.id.resendRow)
+        resendHint = findViewById(R.id.resendHint)
+        resendTimer = findViewById(R.id.resendTimer)
+        verifyButton = findViewById(R.id.verifyButton)
+
+        // Success elements
+        successGroup = findViewById(R.id.successGroup)
+        successIcon = findViewById(R.id.successIcon)
+        successTitle = findViewById(R.id.successTitle)
+        successEmail = findViewById(R.id.successEmail)
+
+        // Initialize OTP fields list
+        otpFields = listOf(otp1, otp2, otp3, otp4, otp5, otp6)
+
+        setupOtpFields()
+    }
+
+    private fun setupListeners() {
+        initialLoginButton.setOnClickListener {
+            showLoginCard()
         }
 
-        b.backButton.setOnClickListener {
-            goBackToEmailStep()
-        }
-
-        // Validación de email en vivo
-        b.continueButton.isEnabled = false
-        b.emailEditText.addTextChangedListener(object : TextWatcher {
-            override fun afterTextChanged(s: Editable?) {
-                val ok = Patterns.EMAIL_ADDRESS.matcher(s.toString().trim()).matches()
-                b.continueButton.isEnabled = ok
-                b.emailInputLayout.error = if (!ok && s?.isNotEmpty() == true) "Correo inválido" else null
-            }
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
-        })
-
-        // Enviar OTP (paso 1 -> paso 2)
-        b.continueButton.setOnClickListener {
-            val email = b.emailEditText.text.toString().trim()
-            if (email.isEmpty()) return@setOnClickListener
-
-            // TODO: llamada a backend para enviar OTP
-            b.otpEmail.text = email
-            goToOtpStep()
-            startResendCountdown()
-        }
-
-        // OTP inputs y verificación
-        b.verifyButton.setOnClickListener {
-            val enteredOtp = otpBoxes.joinToString("") { it.text.toString() }
-            hideKeyboard(it)
-
-            if (enteredOtp == CORRECT_OTP) {
-                // El código es correcto, muestra la pantalla de éxito
-                showSuccessScreen()
-
-                // --- LÓGICA DE REDIRECCIÓN ---
-                // Simulación: El backend te diría si el usuario es nuevo.
-                // Cambia este valor para probar ambos flujos.
-                val isNewUser = true
-
-                // Espera 2 segundos para que el usuario vea la animación
-                // y luego redirige.
-                Handler(Looper.getMainLooper()).postDelayed({
-                    if (isNewUser) {
-                        // Redirigir a Onboarding
-                        val intent = Intent(this, OnboardingActivity::class.java)
-                        startActivity(intent)
-                    } else {
-                        // Redirigir a la pantalla principal
-                        val intent = Intent(this, MainActivity::class.java)
-                        startActivity(intent)
-                    }
-                    // Cierra LoginActivity para que no se pueda volver.
-                    finish()
-                }, 2000)
-
-            } else {
-                // El código es incorrecto (lógica existente)
-                showFeedback("Código incorrecto. Inténtalo de nuevo.", false)
-                Handler(Looper.getMainLooper()).postDelayed({
-                    resetOtpView()
-                }, 2000)
+        backButton.setOnClickListener {
+            if (!isInitialState) {
+                showInitialState()
             }
         }
 
-        wireOtpInputs()
-    }
-
-    private fun showFeedback(message: String, isSuccess: Boolean) {
-        b.otpFeedbackText.apply {
-            text = message
-            visibility = View.VISIBLE
-            setTextColor(
-                ContextCompat.getColor(
-                    this@LoginActivity,
-                    if (isSuccess) R.color.success_500 else R.color.error_500
-                )
-            )
+        continueButton.setOnClickListener {
+            sendLoginCode()
         }
-    }
 
-    private fun showSuccessScreen() {
-        // Ocultar todos los elementos del paso OTP
-        b.backButton.visibility = View.GONE
-        b.otpGroup.visibility = View.GONE
+        verifyButton.setOnClickListener {
+            verifyLoginCode()
+        }
 
-        // Mostrar la vista de éxito
-        b.successGroup.visibility = View.VISIBLE
-        b.successEmail.text = b.emailEditText.text.toString()
-    }
-
-
-    private fun showLoginPanel() {
-        b.loginCard.apply {
-            visibility = View.VISIBLE
-            alpha = 0f
-            translationY = 80f
-            post {
-                // Asegura que el view ya midió su altura antes de animar
-                animate()
-                    .alpha(1f)
-                    .translationY(0f)
-                    .setDuration(220L)
-                    .withEndAction { Log.d(TAG, "Panel mostrado") }
-                    .start()
+        resendRow.setOnClickListener {
+            if (countDownTimer == null) {
+                sendLoginCode()
             }
         }
     }
 
-    // Oculta vistas de Email y muestra vistas de OTP
-    private fun goToOtpStep() {
-        // Ocultar vistas de Email
-        b.loginTitle.visibility = View.GONE
-        b.emailInputLayout.visibility = View.GONE
-        b.continueButton.visibility = View.GONE
-
-        // Mostrar vistas de OTP
-        b.backButton.visibility = View.VISIBLE
-        b.otpGroup.visibility = View.VISIBLE // Group simplifica mostrar todo
-
-        b.otp1.requestFocus()
-        showKeyboard(b.otp1)
-    }
-
-    private fun goBackToEmailStep() {
-        // Ocultar vistas de OTP
-        b.backButton.visibility = View.GONE
-        b.otpGroup.visibility = View.GONE
-
-        // Mostrar vistas de Email
-        b.loginTitle.visibility = View.VISIBLE
-        b.emailInputLayout.visibility = View.VISIBLE
-        b.continueButton.visibility = View.VISIBLE
-
-        b.emailEditText.requestFocus()
-        showKeyboard(b.emailEditText)
-    }
-    private fun startResendCountdown() {
-        timer?.cancel()
-        b.resendHint.text = "Reenviar código en " // Hint inicial con contador
-        b.resendTimer.apply {
-            text = "60s"
-            isClickable = false
-            setOnClickListener(null)
-        }
-
-        timer = object : CountDownTimer(60_000, 1_000) {
-            override fun onTick(ms: Long) {
-                b.resendTimer.text = "${ms / 1000}s"
-            }
-            override fun onFinish() {
-                b.resendHint.text = "¿No has recibido el código?" // Hint final
-                b.resendTimer.text = "Reenviar código" // Texto final
-                b.resendTimer.isClickable = true
-                b.resendTimer.setOnClickListener {
-                    // TODO: re-enviar OTP al backend
-                    startResendCountdown()
-                }
-            }
-        }.start()
-    }
-
-    private fun resetOtpView() {
-        otpBoxes.forEach { it.text.clear() }
-        b.otpFeedbackText.visibility = View.GONE
-        b.verifyButton.visibility = View.GONE
-        b.verifyButton.isEnabled = false
-        b.otp1.requestFocus()
-        showKeyboard(b.otp1)
-    }
-    private fun wireOtpInputs() {
-        for (i in otpBoxes.indices) {
-            otpBoxes[i].addTextChangedListener(object : TextWatcher {
+    private fun setupOtpFields() {
+        otpFields.forEachIndexed { index, editText ->
+            editText.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
                 override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
 
                 override fun afterTextChanged(s: Editable?) {
-                    // Ocultar feedback y botón si el usuario borra texto
-                    b.otpFeedbackText.visibility = View.GONE
-                    b.verifyButton.visibility = View.GONE
-                    b.verifyButton.isEnabled = false
-
                     if (s?.length == 1) {
-                        if (i < otpBoxes.lastIndex) {
-                            otpBoxes[i + 1].requestFocus()
-                        } else {
-                            // Si es el último campo, mostrar el botón "Continuar"
-                            b.verifyButton.visibility = View.VISIBLE
-                            b.verifyButton.isEnabled = true
-                            hideKeyboard(otpBoxes[i])
+                        // Move to next field
+                        if (index < otpFields.size - 1) {
+                            otpFields[index + 1].requestFocus()
                         }
-                    } else if (s?.isEmpty() == true) {
-                        if (i > 0) {
-                            otpBoxes[i - 1].requestFocus()
+                    } else if (s?.length == 0) {
+                        // Move to previous field
+                        if (index > 0) {
+                            otpFields[index - 1].requestFocus()
                         }
+                    }
+
+                    // Check if all fields are filled
+                    val allFilled = otpFields.all { it.text.isNotEmpty() }
+                    verifyButton.isEnabled = allFilled
+
+                    if (allFilled) {
+                        clearOtpError()
                     }
                 }
             })
         }
     }
 
-    private fun showKeyboard(view: View) {
-        view.post {
-            try {
-                val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-                imm.showSoftInput(view, InputMethodManager.SHOW_IMPLICIT)
-            } catch (e: Exception) {
-                Log.e(TAG, "No se pudo abrir el teclado: ${e.message}")
+    private fun showLoginCard() {
+        loginCard.visibility = View.VISIBLE
+        loginCard.animate()
+            .translationY(0f)
+            .alpha(1f)
+            .setDuration(300)
+            .start()
+
+        initialLoginButton.animate()
+            .alpha(0f)
+            .setDuration(300)
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    initialLoginButton.visibility = View.GONE
+                }
+            })
+            .start()
+
+        isInitialState = false
+    }
+
+    private fun showInitialState() {
+        loginCard.animate()
+            .alpha(0f)
+            .setDuration(300)
+            .setListener(object : AnimatorListenerAdapter() {
+                override fun onAnimationEnd(animation: Animator) {
+                    loginCard.visibility = View.GONE
+                    resetToInitialState()
+                }
+            })
+            .start()
+
+        initialLoginButton.visibility = View.VISIBLE
+        initialLoginButton.animate()
+            .alpha(1f)
+            .setDuration(300)
+            .start()
+
+        isInitialState = true
+    }
+
+    private fun resetToInitialState() {
+        otpGroup.visibility = View.GONE
+        successGroup.visibility = View.GONE
+        backButton.visibility = View.GONE
+        emailEditText.text?.clear()
+        clearOtpFields()
+        clearOtpError()
+        countDownTimer?.cancel()
+        countDownTimer = null
+    }
+
+    private fun sendLoginCode() {
+        val email = emailEditText.text.toString().trim()
+
+        if (!Utils.isValidEmail(email)) {
+            emailInputLayout.error = "Por favor ingresa un email válido"
+            return
+        }
+
+        emailInputLayout.error = null
+        continueButton.isEnabled = false
+
+        lifecycleScope.launch {
+            when (val result = repository.sendLoginCode(email)) {
+                is ApiResult.Success -> {
+                    continueButton.isEnabled = true
+                    currentToken = result.data.token
+                    preferencesManager.saveUserEmail(email)
+                    showOtpSection(email)
+                    Utils.showToast(this@LoginActivity, "Código enviado exitosamente")
+                }
+                is ApiResult.Error -> {
+                    continueButton.isEnabled = true
+                    Utils.showToast(this@LoginActivity, result.message)
+                }
+                is ApiResult.Loading -> {
+                    // Loading state handled by button disable
+                }
             }
         }
     }
 
-    private fun hideKeyboard(view: View) {
-        val imm = getSystemService(INPUT_METHOD_SERVICE) as InputMethodManager
-        imm.hideSoftInputFromWindow(view.windowToken, 0)
+    private fun showOtpSection(email: String) {
+        otpEmail.text = email
+        otpGroup.visibility = View.VISIBLE
+        backButton.visibility = View.VISIBLE
+
+        // Start countdown timer
+        startResendTimer()
+
+        // Focus on first OTP field
+        otp1.requestFocus()
+    }
+
+    private fun verifyLoginCode() {
+        val otp = getOtpCode()
+
+        if (otp.length != 6) {
+            showOtpError("Por favor ingresa el código completo")
+            return
+        }
+
+        if (currentToken == null) {
+            Utils.showToast(this, "Error: Token no encontrado. Solicita un nuevo código.")
+            return
+        }
+
+        verifyButton.isEnabled = false
+
+        lifecycleScope.launch {
+            when (val result = repository.validateLogin(otp, currentToken!!)) {
+                is ApiResult.Success -> {
+                    verifyButton.isEnabled = true
+
+                    // Guardar datos del usuario
+                    preferencesManager.saveAuthToken(result.data.token)
+                    result.data.userId?.let { preferencesManager.saveUserId(it) }
+                    preferencesManager.setLoggedIn(true)
+
+                    showSuccessSection()
+
+                    // Navigate to home after delay
+                    android.os.Handler(mainLooper).postDelayed({
+                        navigateToHome()
+                    }, 2000)
+                }
+                is ApiResult.Error -> {
+                    verifyButton.isEnabled = true
+                    showOtpError(result.message)
+                    clearOtpFields()
+                }
+                is ApiResult.Loading -> {
+                    // Loading state handled by button disable
+                }
+            }
+        }
+    }
+
+    private fun showSuccessSection() {
+        otpGroup.visibility = View.GONE
+        successGroup.visibility = View.VISIBLE
+        successEmail.text = preferencesManager.getUserEmail()
+    }
+
+    private fun startResendTimer() {
+        countDownTimer?.cancel()
+
+        countDownTimer = object : CountDownTimer(60000, 1000) {
+            override fun onTick(millisUntilFinished: Long) {
+                val seconds = millisUntilFinished / 1000
+                resendHint.text = "Reenviar código en"
+                resendTimer.text = "${seconds}s"
+            }
+
+            override fun onFinish() {
+                resendHint.text = "¿No recibiste el código?"
+                resendTimer.text = "Reenviar"
+                countDownTimer = null
+            }
+        }.start()
+    }
+
+    private fun getOtpCode(): String {
+        return otpFields.joinToString("") { it.text.toString() }
+    }
+
+    private fun clearOtpFields() {
+        otpFields.forEach { it.text?.clear() }
+        verifyButton.isEnabled = false
+    }
+
+    private fun showOtpError(message: String) {
+        otpFeedbackText.text = message
+        otpFeedbackText.setTextColor(resources.getColor(android.R.color.holo_red_light, null))
+        otpFeedbackText.visibility = View.VISIBLE
+    }
+
+    private fun clearOtpError() {
+        otpFeedbackText.visibility = View.GONE
+    }
+
+    private fun navigateToHome() {
+        startActivity(Intent(this, HomeActivity::class.java))
+        finish()
     }
 
     override fun onDestroy() {
         super.onDestroy()
-        timer?.cancel()
+        countDownTimer?.cancel()
     }
 }

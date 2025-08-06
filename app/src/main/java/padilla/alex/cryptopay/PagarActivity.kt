@@ -2,53 +2,70 @@ package padilla.alex.cryptopay
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
+import android.widget.ImageButton
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import padilla.alex.cryptopay.databinding.ActivityPagarBinding
+import com.google.android.material.button.MaterialButton
 
 class PagarActivity : AppCompatActivity() {
-    
-    private lateinit var binding: ActivityPagarBinding
-    
+
+    private lateinit var backButton: ImageButton
+    private lateinit var continueButton: MaterialButton
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityPagarBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-        
+        setContentView(R.layout.activity_pagar)
+
+        initViews()
         setupClickListeners()
     }
-    
+
+    private fun initViews() {
+        backButton = findViewById(R.id.backButton)
+        continueButton = findViewById(R.id.continueButton)
+    }
+
     private fun setupClickListeners() {
-        // Botón atrás
-        binding.backButton.setOnClickListener {
-            finish()
+        backButton.setOnClickListener {
+            onBackPressed()
         }
-        
-        // Botón continuar
-        binding.continueButton.setOnClickListener {
+
+        continueButton.setOnClickListener {
+            // Simular escaneo exitoso del QR
             val intent = Intent(this, MontoPagarActivity::class.java)
             startActivity(intent)
         }
-        
-        // Navegación bottom navigation
-        binding.navHome.setOnClickListener {
-            val intent = Intent(this, HomeActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
-            startActivity(intent)
-            overridePendingTransition(0, 0)
+
+        // Configurar navegación del footer
+        findViewById<View>(R.id.navHome).setOnClickListener {
+            // Navegar a Home
+            navigateToHome()
         }
-        
-        binding.navCards.setOnClickListener {
-            val intent = Intent(this, TarjetasActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
-            startActivity(intent)
-            overridePendingTransition(0, 0)
+
+        findViewById<View>(R.id.navCards).setOnClickListener {
+            // Navegar a Tarjetas
+            navigateToCards()
         }
-        
-        binding.navWallet.setOnClickListener {
-            val intent = Intent(this, BilleteraActivity::class.java)
-            intent.flags = Intent.FLAG_ACTIVITY_NO_ANIMATION
-            startActivity(intent)
-            overridePendingTransition(0, 0)
+
+        findViewById<View>(R.id.navWallet).setOnClickListener {
+            // Navegar a Billetera
+            navigateToWallet()
         }
+    }
+
+    private fun navigateToHome() {
+        // Implementar navegación a Home
+        Toast.makeText(this, "Navegando a Inicio", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun navigateToCards() {
+        // Implementar navegación a Tarjetas
+        Toast.makeText(this, "Navegando a Tarjetas", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun navigateToWallet() {
+        // Implementar navegación a Billetera
+        Toast.makeText(this, "Navegando a Billetera", Toast.LENGTH_SHORT).show()
     }
 }

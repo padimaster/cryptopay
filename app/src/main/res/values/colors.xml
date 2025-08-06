@@ -67,6 +67,8 @@
 
     <!-- Scrim / sombra -->
     <color name="scrim_60">#99000000</color>
+    <color name="success">#4CAF50</color>
+    <color name="error">#F44336</color>
 
     <color name="cta">#F39C12</color>
 </resources>

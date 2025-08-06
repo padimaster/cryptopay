@@ -178,7 +178,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 tools:text="Código incorrecto"
-                tools:textColor="@color/error_color"
+                tools:textColor="@color/colorError"
                 tools:visibility="visible"/>
 
 
